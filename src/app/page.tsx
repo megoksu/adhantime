@@ -8,6 +8,7 @@ import { TIME_COLORS } from '@/utils/constants';
 import { PrayerTimeDisplay } from '@/components/PrayerTimeDisplay';
 import * as flags from 'country-flag-icons/react/3x2';
 import { countryMapping } from '@/utils/countryMapping';
+import Image from 'next/image';
 
 interface PrayerTime {
   name: string;
@@ -88,7 +89,7 @@ export default function Home() {
         <div className="max-w-3xl w-full text-white mt-4 md:mt-8">
           <div className="text-center flex flex-col items-center">
             <div className="flex flex-col items-center gap-2 mb-6">
-              <img src="/kaaba.svg" alt="Kaaba" className="w-10 h-10" />
+              <Image src="/kaaba.svg" alt="Kaaba" width={40} height={40} />
               <h1 className="text-xl font-light">adhan time</h1>
             </div>
           </div>

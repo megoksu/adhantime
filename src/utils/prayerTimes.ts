@@ -27,8 +27,9 @@ export interface PrayerTime {
 function convertToDate(timeStr: string, timezone: string): Date {
   const [hours, minutes] = timeStr.split(':').map(Number);
   const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-  return date;
+  const timeZoneDate = new Date(date.toLocaleString('en-US', { timeZone: timezone }));
+  timeZoneDate.setHours(hours, minutes, 0, 0);
+  return timeZoneDate;
 }
 
 function formatTime(timeStr: string): string {
@@ -111,7 +112,6 @@ export async function fetchPrayerTimes(city: City | null): Promise<{ prayers: Pr
   }
 
   const mappedPrayers = prayers.map((prayer, index) => {
-    const prayerTime = convertToDate(prayer.time, timezone);
     const nextPrayerTime = getNextPrayerTime(prayers, prayer.name, timezone);
     
     // Check if we're between midnight and Fajr

@@ -1,5 +1,3 @@
-import { PrayerTime } from './prayerTimes';
-
 export function getTimeUntil(targetTime: Date, timezone?: string): string {
     // Create current time in the target timezone
     const now = timezone 

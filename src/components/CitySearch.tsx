@@ -6,7 +6,10 @@ import { searchCities } from '@/utils/api'
 import * as Flags from 'country-flag-icons/react/3x2'
 import { countryMapping } from '@/utils/countryMapping'
 import { useDebounce } from '@/hooks/useDebounce'
-import { TIME_COLORS } from '@/utils/constants'
+
+type FlagComponents = {
+  [key: string]: React.ComponentType;
+};
 
 interface CitySearchProps {
   selectedCity: City | null;
@@ -108,7 +111,7 @@ export default function CitySearch({
                         <div className="flex items-center justify-center gap-3 text-gray-700">
                           {(() => {
                             const code = countryMapping[city.country];
-                            const FlagComponent = code ? (Flags as any)[code] : null;
+                            const FlagComponent = code ? (Flags as FlagComponents)[code] : null;
                             return FlagComponent ? (
                               <div className="w-6 h-4">
                                 <FlagComponent />
