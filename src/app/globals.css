@@ -2,20 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.bg-fajr {
+  @apply bg-gradient-to-b from-indigo-900 to-purple-900;
+}
+
+.bg-sunrise {
+  @apply bg-gradient-to-b from-orange-400 to-yellow-300;
+}
+
+.bg-dhuhr {
+  @apply bg-gradient-to-b from-sky-400 to-blue-500;
+}
+
+.bg-asr {
+  @apply bg-gradient-to-b from-amber-500 to-orange-600;
+}
+
+.bg-maghrib {
+  @apply bg-gradient-to-b from-red-600 to-purple-900;
+}
+
+.bg-isha {
+  @apply bg-gradient-to-b from-blue-900 to-indigo-950;
+}
+
+.bg-night {
+  @apply bg-gradient-to-b from-slate-900 to-blue-950;
 }

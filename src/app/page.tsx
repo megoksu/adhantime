@@ -1,101 +1,153 @@
-import Image from "next/image";
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { fetchPrayerTimes } from '@/utils/prayerTimes';
+import { type City } from '@/utils/types';
+import CitySearch from '@/components/CitySearch';
+import { TIME_COLORS } from '@/utils/constants';
+import { PrayerTimeDisplay } from '@/components/PrayerTimeDisplay';
+import * as flags from 'country-flag-icons/react/3x2';
+import { countryMapping } from '@/utils/countryMapping';
+
+interface PrayerTime {
+  name: string;
+  time: string;
+  isActive: boolean;
+  nextPrayerIn: string;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTime[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [timezone, setTimezone] = useState('Europe/Istanbul');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCity, setSelectedCity] = useState<City>({
+    name: 'Istanbul',
+    country: 'Turkey',
+    lat: 41.0082,
+    lng: 28.9784
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const getTimeBasedColors = () => {
+    if (prayerTimes.length === 0) return TIME_COLORS.default;
+    
+    const activeTime = prayerTimes.find(prayer => prayer.isActive);
+    return activeTime ? TIME_COLORS[activeTime.name as keyof typeof TIME_COLORS] : TIME_COLORS.default;
+  };
+
+  const getFlagComponent = () => {
+    const countryCode = countryMapping[selectedCity.country] || 'TR';
+    const FlagComponent = flags[countryCode as keyof typeof flags];
+    return FlagComponent ? <FlagComponent className="w-6 h-6 rounded" /> : null;
+  };
+
+  useEffect(() => {
+    const getPrayerTimes = async () => {
+      const times = await fetchPrayerTimes(selectedCity);
+      if (times.timezone) {
+        setTimezone(times.timezone);
+      }
+      setPrayerTimes(times.prayers);
+      setLoading(false);
+    };
+
+    getPrayerTimes();
+    
+    const prayerInterval = setInterval(getPrayerTimes, 60000);
+    return () => {
+      clearInterval(prayerInterval);
+    };
+  }, [selectedCity]);
+
+  useEffect(() => {
+    const updateLocalTime = () => {
+      const date = new Date();
+      const localTime = new Date(date.toLocaleString('en-US', {
+        timeZone: timezone
+      }));
+      setCurrentTime(localTime);
+    };
+
+    updateLocalTime();
+    const interval = setInterval(updateLocalTime, 1000);
+    return () => clearInterval(interval);
+  }, [timezone]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-2xl">Loading prayer times...</div>
+      </div>
+    );
+  }
+
+  return (
+    <main className={`fixed inset-0 w-full h-full ${getTimeBasedColors()}`}>
+      <div className="z-10 w-full h-full flex items-start justify-center p-4 md:p-8">
+        <div className="max-w-3xl w-full text-white mt-4 md:mt-8">
+          <div className="text-center flex flex-col items-center">
+            <div className="flex flex-col items-center gap-2 mb-6">
+              <img src="/kaaba.svg" alt="Kaaba" className="w-10 h-10" />
+              <h1 className="text-xl font-light">adhan time</h1>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-center items-center mb-12">
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="text-xl font-light px-6 py-2 border border-white/30 rounded-lg 
+                hover:bg-white/10 transition-all flex items-center gap-3 mx-auto"
+            >
+              {selectedCity && getFlagComponent()}
+              {selectedCity ? `${selectedCity.name}, ${selectedCity.country}` : 'Select City'}
+            </button>
+          </div>
+
+          <div className="text-center mt-auto">
+            <div className="text-8xl font-light mb-2">
+              {currentTime.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              })}
+            </div>
+            <div className="text-xl font-light opacity-75">
+              {(() => {
+                const activePrayer = prayerTimes.find(p => p.isActive);
+                const prayerWithNextTime = activePrayer || prayerTimes[prayerTimes.length - 1];
+                const nextPrayerIndex = (prayerTimes.findIndex(p => p === prayerWithNextTime) + 1) % prayerTimes.length;
+                const nextPrayer = prayerTimes[nextPrayerIndex];
+                
+                if (prayerWithNextTime.nextPrayerIn) {
+                  return `${prayerWithNextTime.nextPrayerIn} until ${nextPrayer.name}`;
+                }
+                return '';
+              })()}
+            </div>
+          </div>
+
+          <CitySearch
+            selectedCity={selectedCity}
+            onCityChange={setSelectedCity}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            currentColor={getTimeBasedColors()}
+          />
+
+          {selectedCity && (
+            <div className="mt-12">
+              <div className="grid md:flex md:justify-center grid-cols-3 md:grid-cols-none grid-rows-2 md:grid-rows-none gap-3 rounded-lg bg-white/25 backdrop-blur-sm px-6 py-4 max-w-2xl mx-auto">
+                {prayerTimes.map((prayer) => (
+                  <PrayerTimeDisplay key={prayer.name} prayer={prayer} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </main>
   );
 }
+
+
