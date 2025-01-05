@@ -5,25 +5,25 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Prayer Times | Worldwide Islamic Prayer Times",
-  description: "Get accurate prayer times for any location worldwide. Features include Qibla direction, Hijri calendar, and multiple language support.",
-  keywords: "prayer times, islamic prayer, salah times, namaz times, qibla direction, hijri calendar",
-  authors: [{ name: "Prayer Times App" }],
+  title: "adhan time | Easiest way to check prayer times",
+  description: "Get quick and easy prayer times for any location worldwide.",
+  keywords: "prayer times, islamic prayer, salah times, namaz times, adhan time, simple prayer times",
+  authors: [{ name: "adhan time" }],
   icons: {
     icon: '/kaaba.svg',
     shortcut: '/kaaba.svg',
     apple: '/kaaba.svg',
   },
   openGraph: {
-    title: "Prayer Times | Worldwide Islamic Prayer Times",
-    description: "Get accurate prayer times for any location worldwide",
+    title: "adhan time | Easiest way to check prayer times",
+    description: "Get quick and easy prayer times for any location worldwide.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Prayer Times | Worldwide Islamic Prayer Times",
-    description: "Get accurate prayer times for any location worldwide",
+    title: "dhan time | Easiest way to check prayer times",
+    description: "Get quick and easy prayer times for any location worldwide.",
   },
 };
 
