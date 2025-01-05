@@ -4,6 +4,7 @@ const nextConfig = {
     remotePatterns: [],
     unoptimized: false,
   },
+  transpilePackages: ['@headlessui/react', 'react-icons']
 }
 
 module.exports = nextConfig 
