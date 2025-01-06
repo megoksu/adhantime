@@ -4,18 +4,22 @@ export function getTimeUntil(targetTime: Date, timezone?: string): string {
         ? new Date(new Date().toLocaleString('en-US', { timeZone: timezone }))
         : new Date();
     
+    console.log('=== Time Calculation Debug ===');
+    console.log('Current time:', now.toLocaleString());
+    console.log('Target time:', targetTime.toLocaleString());
+    
     let diff = targetTime.getTime() - now.getTime();
     
-    // If diff is negative, it means we need to get time until next occurrence
-    // But only add a day if the target time is actually from a previous day
+    // If diff is negative, it means the target time has already passed today
     if (diff < 0) {
-        const targetDay = targetTime.getDate();
-        const currentDay = now.getDate();
+        // Only add a day if we're calculating for the next occurrence
+        // and the target time is for today
+        const targetHours = targetTime.getHours();
+        const currentHours = now.getHours();
         
-        // Only adjust to next day if we're actually on different days
-        if (targetDay !== currentDay || 
-            targetTime.getMonth() !== now.getMonth() || 
-            targetTime.getFullYear() !== now.getFullYear()) {
+        // If current time is after target time on the same day
+        if (currentHours > targetHours || 
+            (currentHours === targetHours && now.getMinutes() > targetTime.getMinutes())) {
             targetTime.setDate(targetTime.getDate() + 1);
             diff = targetTime.getTime() - now.getTime();
         }
@@ -26,54 +30,13 @@ export function getTimeUntil(targetTime: Date, timezone?: string): string {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     
+    console.log('Calculated hours:', hours);
+    console.log('Calculated minutes:', minutes);
+    console.log('========================');
+    
     // Format the output
     if (hours > 0) {
         return `${hours}h ${minutes}m`;
     }
     return `${minutes}m`;
-}
-
-function isTimeBetween(current: Date, start: Date, end: Date): boolean {
-  const currentTime = current.getTime();
-  const startTime = start.getTime();
-  const endTime = end.getTime();
-  return currentTime >= startTime && currentTime <= endTime;
-}
-
-export function getCurrentPrayerPeriod(prayerTimes: {
-  Fajr: Date;
-  Sunrise: Date;
-  Dhuhr: Date;
-  Asr: Date;
-  Maghrib: Date;
-  Isha: Date;
-}): string {
-  const now = new Date();
-  const times = [
-    { name: 'Fajr', time: prayerTimes.Fajr },
-    { name: 'Sunrise', time: prayerTimes.Sunrise },
-    { name: 'Dhuhr', time: prayerTimes.Dhuhr },
-    { name: 'Asr', time: prayerTimes.Asr },
-    { name: 'Maghrib', time: prayerTimes.Maghrib },
-    { name: 'Isha', time: prayerTimes.Isha },
-  ];
-
-  for (let i = 0; i < times.length; i++) {
-    const currentTime = times[i];
-    const nextTime = times[i + 1];
-    
-    if (nextTime) {
-      if (isTimeBetween(now, currentTime.time, nextTime.time)) {
-        return currentTime.name;
-      }
-    } else {
-      // After Isha until midnight, return "Night"
-      if (isTimeBetween(now, currentTime.time, new Date(now.setHours(23, 59, 59)))) {
-        return "Night";
-      }
-    }
-  }
-  
-  // Between midnight and Fajr
-  return "Night";
 }

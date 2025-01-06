@@ -26,10 +26,19 @@ export interface PrayerTime {
 
 function convertToDate(timeStr: string, timezone: string): Date {
   const [hours, minutes] = timeStr.split(':').map(Number);
-  const date = new Date();
-  const timeZoneDate = new Date(date.toLocaleString('en-US', { timeZone: timezone }));
-  timeZoneDate.setHours(hours, minutes, 0, 0);
-  return timeZoneDate;
+  const now = new Date();
+  const timeZoneDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+  
+  // Always use current date, only set hours and minutes
+  return new Date(
+    timeZoneDate.getFullYear(),
+    timeZoneDate.getMonth(),
+    timeZoneDate.getDate(),
+    hours,
+    minutes,
+    0,
+    0
+  );
 }
 
 function formatTime(timeStr: string): string {
@@ -39,14 +48,7 @@ function formatTime(timeStr: string): string {
 function getNextPrayerTime(prayers: { name: string; time: string }[], currentPrayer: string, timezone: string): Date {
   const currentIndex = prayers.findIndex(p => p.name === currentPrayer);
   const nextPrayer = prayers[(currentIndex + 1) % prayers.length];
-  const nextPrayerTime = convertToDate(nextPrayer.time, timezone);
-  
-  // If next prayer is Fajr (index 0), it's tomorrow
-  if (currentIndex === prayers.length - 1) {
-    nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
-  }
-  
-  return nextPrayerTime;
+  return convertToDate(nextPrayer.time, timezone);
 }
 
 export async function fetchPrayerTimes(city: City | null): Promise<{ prayers: PrayerTime[]; timezone: string }> {
