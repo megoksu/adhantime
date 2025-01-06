@@ -1,22 +1,21 @@
 import React from 'react';
-import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 w-full py-4">
+    <footer className="relative w-full py-4 mt-16 min-h-[100px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center">
-          <div className="text-white/80 max-w-2xl text-sm">
+          <div className="text-gray-600 max-w-2xl text-sm">
             <p className="mb-2">
               designed with thought
             </p>
-            <p className="text-white/70">
-              <a href="mailto:mamileyte0234@gmail.com" className="hover:text-white transition-colors">
-                Let's have a chat
+            <p className="text-gray-500">
+              <a href="mailto:mamileyte0234@gmail.com" className="hover:text-white px-2 py-1 rounded transition-colors">
+                Let&apos;s have a chat
               </a>
             </p>
           </div>
-          <div className="mt-4 text-xs text-white/60">
+          <div className="mt-4 text-xs text-gray-500">
             © {new Date().getFullYear()} adhan time. All rights reserved.
           </div>
         </div>

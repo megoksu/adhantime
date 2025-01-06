@@ -8,7 +8,7 @@ export default function Contact() {
         <h1 className="text-3xl font-bold text-emerald-800 mb-6">Contact Us</h1>
         
         <p className="text-gray-600 mb-8">
-          We'd love to hear from you! Whether you have suggestions, feedback, or just want to say hello,
+          We&apos;d love to hear from you! Whether you have suggestions, feedback, or just want to say hello,
           feel free to reach out.
         </p>
 
